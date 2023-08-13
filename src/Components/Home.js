@@ -1,40 +1,61 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Navbar from "./Navbar"
 import Card from './Card';
 import Slide from './Slide';
 import Footer from './Footer'
+//const mongoDB = require('/home/sunny/Desktop/React Learn/gogym/Backend/db');
+// const dataStore = require('home/sunny/Desktop/React Learn/gogym/Backend/dataStore');
 
 const Home = () => {
-    const workout = [
-        {
-            id: 1,
-            exercise: "Bench Press",
-            imgs: "https://homegymreview.co.uk/wp-content/uploads/2020/12/00251101-Barbell-Bench-Press-Chest-Guide-1024x507.jpg",
-            description: "Bench presses can be an effective exercise for building up chest."
-        },
-        {
-            id: 2,
-            exercise: "Incline Bench Press",
-            imgs: "https://image.myupchar.com/9694/webp/incline-bench-press-benefits-types-technique.webp",
-            description: "hello Suyash"
-        },
-        {
-            id: 3,
-            exercise: "Decline Bench Press",
-            imgs: "https://www.inspireusafoundation.org/wp-content/uploads/2021/10/decline-bench-press-1024x566.png",
-            description: "hello Suyash"
-        },
-    ]
+    const [cat,setcat] = useState([]);
+    const [exe,setexe] = useState([]);
+    const loaddata = async()=>{
+       let response = await fetch('http://localhost:5000/api/exercise',{
+        method: "POST",
+        headers: {
+            'Content-Type' : 'application/json'
+        }
+       });
+       response= await response.json();
+       setexe(response[0]);
+       setcat(response[1]);
+      // console.log(response[0],response[1]);
+    }
+    useEffect(()=>{
+        loaddata()
+    },[])
     return (
         <div>
             <Navbar></Navbar>
             <Slide></Slide>
-            <div className="d-flex align-content-center justify-content-center flex-wrap">
-                {workout.map(person =>
-                    <div key={person.id} >
-                        <Card exercise={person.exercise} imgs={person.imgs} description={person.description}></Card>
-                    </div>)
+            <div className=" container fs-3 float-left">
+                {
+                    cat !== []
+                    ?
+                    cat.map((fetched_data)=>{
+                        return( <div className=" row mb-3">
+                            <div key = {fetched_data._id} className = "d-flex float-left" >
+                            {fetched_data.CategoryName}
+                            </div>
+                            <hr/>
+                            {exe  !==[]? 
+                            exe.filter((category_data)=>category_data.CategoryName===fetched_data.CategoryName)
+                            .map(filtercat=>{
+                                return(
+                                    <div key={filtercat._id} className = "d-flex col-12 col-md-3 col lg-2 ">
+                                        <Card exname ={filtercat.name}
+                                        exdes = {filtercat.description}
+                                        eximg = {filtercat.img}></Card>
+                                        </div>
+                                )
+                            })
+                            : <div> No such data found</div>}
+                            </div>
+                        )
+                    })
+                    : ""
                 }
+               
             </div>
             <Footer></Footer>
         </div>

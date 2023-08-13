@@ -1,6 +1,20 @@
 import React from 'react'
+import {
+  BrowserRouter as Router,
+  Route,
+  Link,
+  Routes, useNavigate
+} from "react-router-dom"
+
 
 const Navbar = () => {
+  const navigate =useNavigate();
+  const handleLogout = ()=>{
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("loggedinemail");
+    navigate("/Login")
+    
+  }
 
   return (
     <nav className="navbar navbar-expand-lg bg-body-tertiary">
@@ -22,41 +36,45 @@ const Navbar = () => {
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav">
             <li className="nav-item">
-              <a className="nav-link active" aria-current="page" href="#">
+              <Link className="nav-link active" aria-current="page" to="/">
                 Home
-              </a>
+              </Link>
             </li>
-            <li className="nav-item">
-              <a className="nav-link" href="#">
-                schedule
-              </a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="#">
-                favourites
-              </a>
-            </li>
+            {
+              (localStorage.getItem("authToken")) ?
+                <li className="nav-item">
+                  <Link className="nav-link active" aria-current="page" to="/Schedule">
+                    Schedule
+                  </Link>
+                </li>
+                : ""}
 
 
           </ul>
         </div>
-          {/* <div className='bg-success className="ml-auto"'> */}
-          <div className="d-flex align-items-center">
+        {
+          (localStorage.getItem("authToken")) ?
+            <div className="btn bg-success" onClick={handleLogout}>
+              Logout
+            </div>
+            : <div className="d-flex align-items-center">
 
 
-            <ul className="navbar-nav d-flex float-right ">
-              <li className="nav-item" >
-                <a className="nav-link" href="#">
-                  Login
-                </a>
-              </li>
-              <li className="nav-item ">
-                <a className="nav-link" href="#">
-                  Signup
-                </a>
-              </li>
-            </ul>
-          </div>
+              <ul className="navbar-nav d-flex float-right ">
+                <li className="nav-item" >
+                  <a className="nav-link" href="/Login">
+                    Login
+                  </a>
+                </li>
+                <li className="nav-item ">
+                  <a className="nav-link" href="/Signup">
+                    Signup
+                  </a>
+                </li>
+              </ul>
+            </div>
+        }
+
 
       </div>
     </nav>
